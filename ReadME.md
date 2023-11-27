@@ -11,6 +11,6 @@ Compte rendu
 nvcc printMNIST -o main
 ./main 
 
-Result : //
+Result : \\
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/a63a006e-678a-4525-b1de-cb579babe634)
 
