@@ -22,13 +22,58 @@ void imgColorPrint(int height, int width, int ***img){
   }
 }
 
+// Initialise la matrice entre -1 et 1 
+void MatrixInit (float *M, int n, int p){
+ 
+ for (int i = 0; i<= n; i++){
+  for (int j = 0; j<=p; j++){
+
+   float number = rand();
+   float randomValue = number / RAND_MAX;
+   randomValue = 2*randomValue -1;
+   
+   //printf("Number %f \n",randomValue);
+   
+   *(M+i*p+j) = randomValue;
+  }
+ }
+}
+
+// Affiche la matrice sur le terminal 
+void MatrixPrint(float *M, int n, int p){
+ for (int i = 0; i<= n; i++){
+  for (int j = 0; j<=p; j++){
+   printf("%.2f \t", *(M+i*p+j));
+   
+  }
+  printf("\n");
+ }
+}
+
+void MatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
+ for (int i = 0; i<= n; i++){
+  for (int j = 0; j<=p; j++){
+   float numberM1 = *(M1 +i*p+j);
+   float numberM2 = *(M2 +i*p+j);
+   float numberOut = numberM1 + numberM2;
+   *(Mout +i*p+j) = numberOut;
+  }
+ }
+}
+
 int main() {
   int i, j;
   int ***img;
   int color[3]={255,0,0};
   unsigned int magic, nbImg, nbRows, nbCols;
   unsigned char val;
+  int n = 3;
+  int p = 4; 
+  float  M1[n][p], M2[n][p], Mout[n][p];
+  
   FILE *fptr;
+ 
+  srand(time(NULL));
 
   // Malloc image
   img = (int ***)malloc(HEIGHT*sizeof(int **));
@@ -38,7 +83,9 @@ int main() {
       img[i][j] = (int *)malloc(sizeof(int)*3);
     }
   }
+  
 
+     
   //Open File
   if((fptr = fopen("train-images.idx3-ubyte","rb")) == NULL){
     printf("Can't open file");
@@ -51,7 +98,7 @@ int main() {
   fread(&nbRows, sizeof(int), 1, fptr);
   fread(&nbCols, sizeof(int), 1, fptr);
 /*
-  printf("Nb Magic : %u \n", magic);
+  printf("Nb Magic : %u \n", magic);git 
   printf("Nb Img : %u \n", nbImg);
   printf("Nb Rows : %u \n", nbRows);
   printf("Nb Cols : %u \n", nbCols);
@@ -78,6 +125,21 @@ int main() {
 
   // print image
   imgColorPrint(HEIGHT, WIDTH, img);
+  
+  
+  MatrixInit(&M1[0][0], n, p);
+  MatrixInit(&M2[0][0], n, p);
+  MatrixInit(&Mout[0][0], n, p);
+  
+  printf("Matricer M1 : \n");
+  MatrixPrint(&M1[0][0], n, p);
+  
+  printf("Matricer M2 : \n");
+  MatrixPrint(&M2[0][0], n, p);
+  
+  MatrixAdd(&M1[0][0], &M2[0][0], &Mout[0][0], n, p);
+  printf("Matrice M1 + M2 : \n");
+  MatrixPrint(&Mout[0][0], n, p);
   
   exit(EXIT_SUCCESS);
 }
