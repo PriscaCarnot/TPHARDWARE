@@ -17,4 +17,7 @@ Result : \
 Addition de Matrice : \
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/0993ac3a-7673-4a6e-82f3-8abd8bc922fb)
 
+Multiplication  de matrice : \ 
+![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/491b3f99-c6ca-4ae1-b13a-ab35357e59d0)
+
 
