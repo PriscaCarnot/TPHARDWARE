@@ -14,3 +14,7 @@ nvcc printMNIST -o main
 Result : \
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/a63a006e-678a-4525-b1de-cb579babe634)
 
+Addition de Matrice : \
+![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/0993ac3a-7673-4a6e-82f3-8abd8bc922fb)
+
+
