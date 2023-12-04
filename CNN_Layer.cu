@@ -7,11 +7,10 @@
 
 
 // Initialise la matrice entre -1 et 1 
-void MatrixInit (float *M, int n, int p, bool a){
+void MatrixInit (float *M, int n, int p){
  
  for (int i = 0; i< n; i++){
   for (int j = 0; j<p; j++){
-   if (a==true){
     float number = rand();
     float randomValue = number / RAND_MAX;
     randomValue = 2*randomValue -1;
@@ -19,8 +18,26 @@ void MatrixInit (float *M, int n, int p, bool a){
    //printf("Number %f \n",randomValue);
    
     *(M+i*p+j) = randomValue;
+  }
+ }
+}
+
+void MatrixInit3D(float *M, int c, int n, int p, bool a){
+ 
+ for (int i = 0; i< c; i++){
+  for (int j = 0; j<n; j++){
+   for (int k = 0; k<p ; k++){
+    if (a == true){
+     float number = rand();
+     float randomValue = number / RAND_MAX;
+     randomValue = 2*randomValue -1;
+   
+     //printf("Number %f \n",randomValue);
+   
+     *(M+i*n*p+j*p+k) = randomValue;
+    }
+    else{*(M+i*n*p+j*p+k) = 0;}
    }
-   else {*(M+i*p+j) = 0;}
   }
  }
 }
@@ -48,18 +65,6 @@ void MatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
  }
 }
 
-/*
-// Additionne deux matrices sur le GPU
-__global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout, int n, int p) {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    int j = blockIdx.y * blockDim.y + threadIdx.y;
-
-    if (i < n && j < p) {
-        int index = i * p + j;
-        Mout[index] = M1[index] + M2[index];
-    }
-}
-*/
 
 __global__ void cudaMatrixAdd(float *M1, float *M2, float *MoutGPU, int n, int p){
   int i = blockIdx.x;
@@ -102,57 +107,91 @@ __global__ void cudaMatrixMult(float *M1, float *M2, float *MoutGPU, int n){
    }
 }
 
+__global__ void cudaMatrixConv(float *M1, float *M2, float *MoutGPU, int c, int n, int kernel){
+  
+  for (int i = 0;i<c;i++){
+  // Parcours de raw_data
+   for (int a = 0; a<n-kernel+1; a++ ){
+    for (int b = 0; b<n-kernel+1; b++){
+     // Parcours du noyau
+     for (int k = 0; k<kernel; k++){
+      for (int m = 0; m<kernel; m++){
+       // Convolution
+       float numberM1 = *(M1 +(a+k)*n+(b+m));
+       float numberM2 = *(M2 +i*kernel*kernel+k*kernel+m);
+       //printf("M1: %f, M2: %f \n",numberM1,numberM2);
+       float numberOut = numberM1 * numberM2;
+       *(MoutGPU +i*(n-kernel)*(n-kernel)+a*(n-kernel)+b) += numberOut;
+      
+     }
+     
+    }
+    printf("Mres: %f \n",*(MoutGPU +i*(n-kernel)*(n-kernel)+a*(n-kernel)+b));
+   }
+  }
+ }
+}
+
+
 
 
 int main() {
-  int n = 32; // taille raw data
-  int p = 28;
+  int n = 4; // taille raw data
+  int p = 3;
   int c = 6; 
-  float  raw_data[n][n], C1_data[c][p][p], Mout[n][p], MoutGPU[n][p], MoutGPU2[n][p];
+  int l = 14;
+  int m = 2;
+  float  raw_data[n][n], C1_data[c][p][p], S1_data[c][l][l], C1_kernel[c][m][m];
   
   // Avec le CPU : 
-  MatrixInit(&raw_data[0][0], n, n, true);
+  MatrixInit(&raw_data[0][0], n, n);
+  //MatrixPrint(&raw_data[0][0], n, n);
+  
+  MatrixInit3D(&C1_data[0][0][0],c,p,p,false);
+  MatrixInit3D(&S1_data[0][0][0],c,l,l,false);
+  MatrixInit3D(&C1_kernel[0][0][0],c,m,m,true);
+  
   MatrixPrint(&raw_data[0][0], n, n);
-
+  MatrixPrint(&C1_kernel[0][0][0], m, m);
   
-  /*
+  
   // Avec le GPU : 
-  float *d_M1, *d_M2, *d_Mout, *d_Mout2;
+  float *d_raw_data, *d_C1_data, *d_S1_data, *d_C1_kernel;
 
   
-  cudaMalloc((void**)&d_M1, (n * p) * sizeof(float));
-  cudaMalloc((void**)&d_M2, (n * p) * sizeof(float));
-  cudaMalloc((void**)&d_Mout, (n * p) * sizeof(float));
-  cudaMalloc((void**)&d_Mout2, (n * p) * sizeof(float));
+  cudaMalloc((void**)&d_raw_data, (n * n) * sizeof(float));
+  cudaMalloc((void**)&d_C1_data, (c*p*p) * sizeof(float));
+  cudaMalloc((void**)&d_S1_data, (c*l*l) * sizeof(float));
+  cudaMalloc((void**)&d_C1_kernel, (c*m*m) * sizeof(float));
 
     
-  cudaMemcpy(d_M1, M1, (n * p) * sizeof(float), cudaMemcpyHostToDevice);
-  cudaMemcpy(d_M2, M2, (n * p) * sizeof(float), cudaMemcpyHostToDevice);
-  cudaMemcpy(d_Mout, MoutGPU, (n * p) * sizeof(float), cudaMemcpyHostToDevice);
-  cudaMemcpy(d_Mout2, MoutGPU2, (n * p) * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_raw_data, raw_data, (n * n) * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_C1_data, C1_data, (c*p*p) * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_S1_data, S1_data, (c*l*l) * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_C1_kernel, C1_kernel, (c*m*m) * sizeof(float), cudaMemcpyHostToDevice);
   
-  
-  cudaMatrixAdd<<<n, p>>>(d_M1, d_M2, d_Mout2, n, p);
-  cudaMatrixMult<<<n,p>>>(d_M1, d_M2, d_Mout, n);
+  cudaMatrixConv<<<1, 1>>>(d_raw_data, d_C1_kernel, d_C1_data, c, n, m);
+  //convolution_kernel<<<c,1>>>(d_raw_data, d_C1_kernel, d_C1_data);
+  //cudaMatrixMult<<<n,p>>>(d_M1, d_M2, d_Mout, n);
  
   
   
-  cudaMemcpy(MoutGPU, d_Mout, n * p * sizeof(float), cudaMemcpyDeviceToHost);
-  cudaMemcpy(MoutGPU2, d_Mout2, n * p * sizeof(float), cudaMemcpyDeviceToHost);
+  cudaMemcpy(C1_data, d_C1_data, c*p*p * sizeof(float), cudaMemcpyDeviceToHost);
+  //cudaMemcpy(MoutGPU2, d_Mout2, n * p * sizeof(float), cudaMemcpyDeviceToHost);
   
-  
+  /*
   printf("\nMatrice M1 + M2 (GPU) :\n");
   MatrixPrint(&MoutGPU2[0][0], n, p);
   
   printf("\nMatrice M1 * M2 (GPU) :\n");
   MatrixPrint(&MoutGPU[0][0], n, p);
-  
+  */
     
-  cudaFree(d_M1);
-  cudaFree(d_M2);
-  cudaFree(d_Mout);
-  cudaFree(d_Mout2);
-  
-*/
+  cudaFree(d_raw_data);
+  cudaFree(d_C1_data);
+  cudaFree(d_C1_kernel);
+  cudaFree(d_S1_data);
+  MatrixPrint(&C1_data[0][0][0], p, p);
+
   exit(EXIT_SUCCESS);
 }
