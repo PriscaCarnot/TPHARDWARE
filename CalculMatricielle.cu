@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <time.h>
+#include <cuda_runtime.h>
 
 
 
@@ -102,10 +103,14 @@ __global__ void cudaMatrixMult(float *M1, float *M2, float *MoutGPU, int n){
 
 
 int main() {
-  int n = 2;
-  int p = 2; 
+  int n = 500;
+  int p = 500; 
   float  M1[n][p], M2[n][p], Mout[n][p], MoutGPU[n][p], MoutGPU2[n][p];
   
+  
+  clock_t startCPU,endCPU;
+  startCPU = clock();
+    
   // Avec le CPU : 
   MatrixInit(&M1[0][0], n, p);
   MatrixInit(&M2[0][0], n, p);
@@ -128,10 +133,29 @@ int main() {
   printf("\nMatrice M1 * M2 : \n");
   MatrixPrint(&Mout[0][0], n, p);
   
+  endCPU = clock();
+  double CPUtime = ((double) (endCPU-startCPU))/CLOCKS_PER_SEC;
+  printf("\n Temps d'éxécution CPU: %f sec \n",CPUtime);
+  
   // Avec le GPU : 
+  cudaEvent_t startGPU,endGPU;
+  cudaEventCreate(&startGPU);
+  cudaEventCreate(&endGPU);
+  
+  
+  cudaEvent_t startGPU2,endGPU2;
+  cudaEventCreate(&startGPU2);
+  cudaEventCreate(&endGPU2);
+  
+  
+  cudaEvent_t startGPU3,endGPU3;
+  cudaEventCreate(&startGPU3);
+  cudaEventCreate(&endGPU3);
+  
+  cudaEventRecord(startGPU);
   float *d_M1, *d_M2, *d_Mout, *d_Mout2;
 
- 
+  
   cudaMalloc((void**)&d_M1, (n * p) * sizeof(float));
   cudaMalloc((void**)&d_M2, (n * p) * sizeof(float));
   cudaMalloc((void**)&d_Mout, (n * p) * sizeof(float));
@@ -142,23 +166,46 @@ int main() {
   cudaMemcpy(d_M2, M2, (n * p) * sizeof(float), cudaMemcpyHostToDevice);
   cudaMemcpy(d_Mout, MoutGPU, (n * p) * sizeof(float), cudaMemcpyHostToDevice);
   cudaMemcpy(d_Mout2, MoutGPU2, (n * p) * sizeof(float), cudaMemcpyHostToDevice);
-   
+  
+  cudaEventRecord(endGPU);
+  cudaEventSynchronize(endGPU);
+  float GPUtime;
+  cudaEventElapsedTime(&GPUtime, startGPU, endGPU);
+  printf("\n Temps d'éxécution GPU (récup): %f msec \n",GPUtime);
+  
+  cudaEventRecord(startGPU2); 
   cudaMatrixAdd<<<n, p>>>(d_M1, d_M2, d_Mout2, n, p);
   cudaMatrixMult<<<n,p>>>(d_M1, d_M2, d_Mout, n);
-    
+  
+  cudaEventRecord(endGPU2);
+  cudaEventSynchronize(endGPU2);
+  float GPUtime2;
+  cudaEventElapsedTime(&GPUtime2, startGPU2, endGPU2);  
+  printf("\n Temps d'éxécution GPU (exec): %f msec \n",GPUtime2);
+  
+  
+  cudaEventRecord(startGPU3); 
   cudaMemcpy(MoutGPU, d_Mout, n * p * sizeof(float), cudaMemcpyDeviceToHost);
   cudaMemcpy(MoutGPU2, d_Mout2, n * p * sizeof(float), cudaMemcpyDeviceToHost);
   
+  /*
   printf("\nMatrice M1 + M2 (GPU) :\n");
   MatrixPrint(&MoutGPU2[0][0], n, p);
   
   printf("\nMatrice M1 * M2 (GPU) :\n");
   MatrixPrint(&MoutGPU[0][0], n, p);
+  */
     
   cudaFree(d_M1);
   cudaFree(d_M2);
   cudaFree(d_Mout);
   cudaFree(d_Mout2);
+  
+  cudaEventRecord(endGPU3);
+  cudaEventSynchronize(endGPU3);
+  float GPUtime3;
+  cudaEventElapsedTime(&GPUtime3, startGPU3, endGPU3);
+  printf("\n Temps d'éxécution GPU (envoie): %f msec \n",GPUtime3);
 
   exit(EXIT_SUCCESS);
 }
