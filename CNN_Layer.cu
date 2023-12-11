@@ -126,15 +126,10 @@ __global__ void cudaMatrixMult(float *M1, float *M2, float *MoutGPU, int n){
 // Convolution sur GPU
 __global__ void cudaMatrixConv(float *M1, float *M2, float *MoutGPU, int c, int n, int kernel){
   
-  //for (int i = 0;i<c;i++){
-  // Parcours de raw_data
-   //for (int a = 0; a<n-kernel+1; a++ ){
-    //for (int b = 0; b<n-kernel+1; b++){
      int i = blockIdx.x;
      int a = blockIdx.y;
      int b = blockIdx.z;
      
-     //printf("%f\n",b);
      // Parcours du noyau
      float num = 0;
      for (int k = 0; k<kernel; k++){
@@ -142,28 +137,21 @@ __global__ void cudaMatrixConv(float *M1, float *M2, float *MoutGPU, int c, int 
        // Convolution
        float numberM1 = *(M1 +(a+k)*n+(b+m));
        float numberM2 = *(M2 +i*kernel*kernel+k*kernel+m);
-       //printf("M1: %f, M2: %f \n",numberM1,numberM2);
        float numberOut = numberM1 * numberM2;
        num += numberOut;
       
      }
     }
     *(MoutGPU +i*(n-kernel+1)*(n-kernel+1)+a*(n-kernel+1)+b) = num;
-    
-    //printf("Mres: %f \n",*(MoutGPU +i*(n-kernel+1)*(n-kernel+1)+a*(n-kernel+1)+b));
-   //}
-  //}
- //}
 }
 
 
 // Moyenneur = Convolution avec un filtre [[1 ,1],[1, 1]]
 __global__ void cudaMatrixSubSamp(float *M1, float *MoutGPU, int c, int p, int l){
 
-  for (int i = 0;i<c;i++){
-  // Parcours de sortie conv
-   for (int a = 0; a<p; a = a+2 ){
-    for (int b = 0; b<p; b = b+2){
+     int i = blockIdx.x;
+     int a = blockIdx.y*2;
+     int b = blockIdx.z*2;
      // Parcours du noyau
      float num = 0;
      for (int k = 0; k<2; k++){
@@ -173,11 +161,7 @@ __global__ void cudaMatrixSubSamp(float *M1, float *MoutGPU, int c, int p, int l
        num += numberOut;
      }
     }
-    //printf("Mres: %f \n", num/4);
     *(MoutGPU +i*(l)*(l)+a/2*(l)+b/2) = activation_tanh(num/4);
-   }
-  }
- }
 }
 
 
@@ -220,7 +204,7 @@ int main() {
   cudaMemcpy(d_C1_kernel, C1_kernel, (c*m*m) * sizeof(float), cudaMemcpyHostToDevice);
   
   dim3 gridSize(c, p, p);
-  dim3 gridSize2(c, p, p);
+  dim3 gridSize2(c, l, l);
   cudaMatrixConv<<<gridSize, 1>>>(d_raw_data, d_C1_kernel, d_C1_data, c, n, m); 
   cudaMatrixSubSamp<<<gridSize2, 1>>>(d_C1_data, d_S1_data, c, p, l);
   
