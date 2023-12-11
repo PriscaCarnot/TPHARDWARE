@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <cuda_runtime.h>
+#include <math.h>
 
 
 
@@ -76,6 +77,9 @@ void MatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
  }
 }
 
+__device__ float activation_tanh(float M){
+ return tanhf(M);
+}
 
 __global__ void cudaMatrixAdd(float *M1, float *M2, float *MoutGPU, int n, int p){
   int i = blockIdx.x;
@@ -122,10 +126,15 @@ __global__ void cudaMatrixMult(float *M1, float *M2, float *MoutGPU, int n){
 // Convolution sur GPU
 __global__ void cudaMatrixConv(float *M1, float *M2, float *MoutGPU, int c, int n, int kernel){
   
-  for (int i = 0;i<c;i++){
+  //for (int i = 0;i<c;i++){
   // Parcours de raw_data
-   for (int a = 0; a<n-kernel+1; a++ ){
-    for (int b = 0; b<n-kernel+1; b++){
+   //for (int a = 0; a<n-kernel+1; a++ ){
+    //for (int b = 0; b<n-kernel+1; b++){
+     int i = blockIdx.x;
+     int a = blockIdx.y;
+     int b = blockIdx.z;
+     
+     //printf("%f\n",b);
      // Parcours du noyau
      float num = 0;
      for (int k = 0; k<kernel; k++){
@@ -140,10 +149,11 @@ __global__ void cudaMatrixConv(float *M1, float *M2, float *MoutGPU, int c, int 
      }
     }
     *(MoutGPU +i*(n-kernel+1)*(n-kernel+1)+a*(n-kernel+1)+b) = num;
+    
     //printf("Mres: %f \n",*(MoutGPU +i*(n-kernel+1)*(n-kernel+1)+a*(n-kernel+1)+b));
-   }
-  }
- }
+   //}
+  //}
+ //}
 }
 
 
@@ -163,12 +173,13 @@ __global__ void cudaMatrixSubSamp(float *M1, float *MoutGPU, int c, int p, int l
        num += numberOut;
      }
     }
-    printf("Mres: %f \n", num/4);
-    *(MoutGPU +i*(l)*(l)+a/2*(l)+b/2) = num/4;
+    //printf("Mres: %f \n", num/4);
+    *(MoutGPU +i*(l)*(l)+a/2*(l)+b/2) = activation_tanh(num/4);
    }
   }
  }
 }
+
 
 
 int main() {
@@ -187,7 +198,9 @@ int main() {
   MatrixInit3D(&S1_data[0][0][0],c,l,l,false);
   MatrixInit3D(&C1_kernel[0][0][0],c,m,m,true);
   
+  printf("Matrice d'entree : \n");
   MatrixPrint(&raw_data[0][0], n, n);
+  printf("Noyau de convolution : \n");
   MatrixPrint(&C1_kernel[0][0][0], m, m);
   
   
@@ -206,8 +219,10 @@ int main() {
   cudaMemcpy(d_S1_data, S1_data, (c*l*l) * sizeof(float), cudaMemcpyHostToDevice);
   cudaMemcpy(d_C1_kernel, C1_kernel, (c*m*m) * sizeof(float), cudaMemcpyHostToDevice);
   
-  cudaMatrixConv<<<1, 1>>>(d_raw_data, d_C1_kernel, d_C1_data, c, n, m); 
-  cudaMatrixSubSamp<<<1, 1>>>(d_C1_data, d_S1_data, c, p, l);
+  dim3 gridSize(c, p, p);
+  dim3 gridSize2(c, p, p);
+  cudaMatrixConv<<<gridSize, 1>>>(d_raw_data, d_C1_kernel, d_C1_data, c, n, m); 
+  cudaMatrixSubSamp<<<gridSize2, 1>>>(d_C1_data, d_S1_data, c, p, l);
   
   cudaMemcpy(C1_data, d_C1_data, c*p*p * sizeof(float), cudaMemcpyDeviceToHost);
   cudaMemcpy(S1_data, d_S1_data, c*l*l * sizeof(float), cudaMemcpyDeviceToHost);
