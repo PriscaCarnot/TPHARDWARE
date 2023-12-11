@@ -22,4 +22,4 @@ Temps d'éxecution CPU et GPU :
 
 Action la plus chronophage : transfert de données entre le CPU et le GPU.
 
-Résultat convolution avec une matrice de données de 8**8, un noyau de convoluton de 2*5*5, une matrice de sortie à la premère convolution de 2*4*4 et une matrice de sortie après subsampling de 2*2*2 
+Résultat convolution avec une matrice de données de 8\*8, un noyau de convoluton de 2\*5\*5, une matrice de sortie à la premère convolution de 2\*4\*4 et une matrice de sortie après subsampling de 2\*2\*2.
