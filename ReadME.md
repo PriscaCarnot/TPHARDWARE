@@ -1,9 +1,9 @@
-## TPHARDWARE
+# TPHARDWARE
 TP ENSEA 3A HARDWARE
 
-# Compte rendu 
+## Compte rendu 
 
-# Objectif du TP :
+## Objectif du TP :
 
  - Implémentation du model LeNet5 avec cuda : 
 
@@ -13,7 +13,7 @@ TP ENSEA 3A HARDWARE
 
 - Compréhension de cuda, des blocks et des threads
 
-# Descriptifs des fichiers :  
+## Descriptifs des fichiers :  
 
 CalculMatricielle.cu : Contient toutes les fonctions de bases de calculs matricielles (addition, multiplication).
 
@@ -26,7 +26,7 @@ nvcc CalculMatricelle -o main
 ./main 
 
 
-# Partie 1 : CalculMatricielle.cu 
+## Partie 1 : CalculMatricielle.cu 
 
 Objectif de la partie : Comparer le temps de calculs de fonctions d'opérations de base entre matrices sur CPU puis GPU. 
 
@@ -44,7 +44,7 @@ Action la plus chronophage : transfert de données entre le CPU et le GPU.
 Conclusion : Pour des tailles de matrice élevées, le plus long est le temps de transfert des données entre le GPU et le CPU. Pour des tailles de matrices faible, le CPU est plus rapide. Lorsque l'on travaille avec des matrices de grandes tailles, passer par le GPU devient indispensable pour gagner du temps. 
 
 
-# Partie 2 : CNN_layer.cu
+## Partie 2 : CNN_layer.cu
 
 Résultat :
 
@@ -64,5 +64,5 @@ Matrice après subsampling : 2\*2\*2
 Résultat : Nous avons vérifier la convolution pour des matrices de petites tailles. 
 Là encore, le CPU est plus rapide pour les matrices de petites tailles (à cause du temps non négligeable de transfert de données entre le CPU et GPU). Dès que la taille augmente, le GPU devient plus efficace. 
 
-# Partie 3 : printMNIST.cu
+## Partie 3 : printMNIST.cu
 
