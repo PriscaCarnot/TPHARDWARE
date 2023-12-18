@@ -36,9 +36,12 @@ Objectif de la partie : Comparer le temps de calculs de fonctions d'opérations 
 - Définir variables et pointeurs
 - Alouer de la mémoire aux pointeurs avec cudaMalloc
 - Envoyer variables et pointeurs du CPU au GPU avec cudaMemcpy
-- Faire la fonction voulu
+- Définir les dimensiosn des blocks et threads 
+- Faire la fonction voulu : NomFonction<<<BlocksSize, threadsSize*>>>(variable fonction)
 - Envoyer les variables et pointeurs du GPU au CPU avec cudaMemcpy
 - Libérer la mémoire alouée
+
+  *Doit être inférieur à 1024
 
 Résultat calcul de base matricielles : 
 
