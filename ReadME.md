@@ -32,6 +32,14 @@ nvcc CalculMatricelle -o main
 
 Objectif de la partie : Comparer le temps de calculs de fonctions d'opérations de base entre matrices sur CPU puis GPU. 
 
+### Implémentation GPU : 
+- Définir variables et pointeurs
+- Alouer de la mémoire aux pointeurs avec cudaMalloc
+- Envoyer variables et pointeurs du CPU au GPU avec cudaMemcpy
+- Faire la fonction voulu
+- Envoyer les variables et pointeurs du GPU au CPU avec cudaMemcpy
+- Libérer la mémoire alouée
+
 Résultat calcul de base matricielles : 
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/f701d992-dc4f-4f12-9d4f-70efc47a8273)
@@ -56,6 +64,11 @@ Noyau de convolution : matrice de 2\*5\*5,
 Matrice après convolution :  2\*4\*4 
 
 Matrice après subsampling : 2\*2\*2
+
+
+### Convolution : 
+
+![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/fef33c4c-a97a-4bf3-9b7b-6081d4c75e53)
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/46d8f261-fab7-4b38-8843-a3449b6636e6)
 
