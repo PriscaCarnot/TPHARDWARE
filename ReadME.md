@@ -9,7 +9,7 @@ TP ENSEA 3A HARDWARE
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/120046244/8082df58-c952-4aa8-a936-bfeb7f892d80)
 
-- Montrer que passer par le GPU est plus rapide que par le CPU
+- Montrer que passer par le GPU est plus rapide que par le CPU pour des tailles de matrices importnantes.
 
 # Partie 1 : CalculMatricielle 
 
