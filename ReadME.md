@@ -4,7 +4,7 @@ TP ENSEA 3A HARDWARE
 ## Compte rendu 
 
 ## Objectif du TP :
-
+mémoire
  - Implémentation du model LeNet5 avec cuda : 
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/120046244/8082df58-c952-4aa8-a936-bfeb7f892d80)
@@ -33,7 +33,7 @@ nvcc CalculMatricelle -o main
 Objectif de la partie : Comparer le temps de calculs de fonctions d'opérations de base entre matrices sur CPU puis GPU. 
 
 ### Implémentation GPU : 
-- Définir variables et pointeurs
+- Définir variables et pointeursmémoire
 - Alouer de la mémoire aux pointeurs avec cudaMalloc
 - Envoyer variables et pointeurs du CPU au GPU avec cudaMemcpy
 - Définir les dimensiosn des blocks et threads 
@@ -72,6 +72,10 @@ Matrice après subsampling : 2\*2\*2
 ### Convolution : 
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/fef33c4c-a97a-4bf3-9b7b-6081d4c75e53)
+
+Indices de convolutions : 
+
+Matrice 1 : indice de la matrice du premier élément de convolution + indice du kernel (M1: 2 dimensions et M2: 3 dimensions)
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/46d8f261-fab7-4b38-8843-a3449b6636e6)
 
