@@ -22,14 +22,15 @@ CNN_Layer.cu : Contient les fonctions de convolutions entre matrice, ainsi que l
 printMNIST_1.cu : Contient la fonction main qui fait la pipeline de tout le réseaux de neuronnes. 
 
 Pour lancer un fichier .cu : 
+
 nvcc CalculMatricelle -o main
+
 ./main 
 
 
 ## Partie 1 : CalculMatricielle.cu 
 
 Objectif de la partie : Comparer le temps de calculs de fonctions d'opérations de base entre matrices sur CPU puis GPU. 
-
 
 Résultat calcul de base matricielles : 
 
