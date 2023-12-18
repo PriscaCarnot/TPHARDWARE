@@ -1,7 +1,15 @@
-# TPHARDWARE
+## TPHARDWARE
 TP ENSEA 3A HARDWARE
 
 # Compte rendu 
+
+# Objectif du TP :
+
+ - Construire model LeNet5 avec cuda : 
+
+![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/120046244/8082df58-c952-4aa8-a936-bfeb7f892d80)
+
+- Montrer que passer par le GPU est plus rapide que par le CPU
 
 # Partie 1 : CalculMatricielle 
 
