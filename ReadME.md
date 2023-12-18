@@ -77,6 +77,8 @@ Matrice après subsampling : 2\*2\*2
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/fef33c4c-a97a-4bf3-9b7b-6081d4c75e53)
 
+Exécution (dans ce cas) de 2\*4\*4 threads pour obtenir la matrice de sortie. Un thread permet le calcul d'une convolution. 
+
 Indices de convolutions : 
 
 Matrice 1 : indice de la matrice du premier élément de convolution + indice du kernel (M1: 2 dimensions et M2: 3 dimensions)
@@ -90,6 +92,20 @@ Matrice 2 : indice du kernel
 
 Résultat : Nous avons vérifier la convolution pour des matrices de petites tailles. 
 Là encore, le CPU est plus rapide pour les matrices de petites tailles (à cause du temps non négligeable de transfert de données entre le CPU et GPU). Dès que la taille augmente, le GPU devient plus efficace. 
+
+### Sous échantillonnage :
+
+Moyennage sur une matrice carré 2\*2 (soit une convolution avec un noyau constitué uniquement de coefficients 1/4 avec un stride de 2).
+
+Pour ajuster le stride à 2, on multiplie l'indice x et y par 2 pour le moyennage (pas pour l'affectation des coefficients dans la matrice de sortie).
+
+### Flatten : 
+
+Coller les lignes de la matrice de bout en bout pour obtenir un vecteur.
+
+### Dense layer : 
+
+Multiplier le vecteur précédent par les poids de la couche et ajouter un biais. Les poids se trouve dans le notebook donné.
 
 ## Partie 3 : printMNIST.cu
 
