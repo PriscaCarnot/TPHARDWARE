@@ -1,18 +1,24 @@
 # TPHARDWARE
 TP ENSEA 3A HARDWARE
 
+# Compte rendu 
 
-TP du 27 novembre 2023
-Prise en main de Cuda
+# Partie 1 : 
 
+Descriptifs des fichiers :  
 
-Compte rendu 
+CalculMatricielle.cu : Contient toutes les fonctions de bases de calculs matricielles (addition, multiplication).
 
+CNN_Layer.cu : Contient les fonctions de convolutions entre matrice, ainsi que la fonction d'activation
+
+printMNIST_1.cu : Contient la fonction main qui fait la pipeline de tout le réseaux de neuronnes. 
+
+Pour lancer un fichier .cu : 
 nvcc CalculMatricelle -o main
 ./main 
 
+Résultat calcul de base matricielles : 
 
-Calcul de base de matrice : 
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/f701d992-dc4f-4f12-9d4f-70efc47a8273)
 
@@ -21,6 +27,11 @@ Temps d'éxecution CPU et GPU :
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/20b85af1-86aa-4515-a99d-a1feed5d32d8)
 
 Action la plus chronophage : transfert de données entre le CPU et le GPU.
+
+Conclusion : Pour des tailles de matrice élevées, le plus long est le temps de transfert des données entre le GPU et le CPU. Pour des tailles de matrices faible, le CPU est plus rapide. Lorsque l'on travaille avec des matrices de grandes tailles, passer par le GPU devient indispensable pour gagner du temps. 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Partie 2 :
 
 Résultat :
 
