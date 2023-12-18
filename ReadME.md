@@ -44,7 +44,7 @@ Objectif de la partie : Comparer le temps de calculs de fonctions d'opérations 
   *Doit être inférieur à 1024
 
 Les threads permettent de paralléliser des tâches longues tel que lors de calcul matricielles pour les rendre plus rapide. Ici, pour ne pas être limité par la taille du ThreadSize, on utilise BlockSize pour diviser les calculs matricielles en plusieurs petits calculs fait par des threads (cela revient à utiliser plusieurs threads). 
-g
+
 On utilise blockIdx.x pour récupérer l'indice x (ou y ou z). Le but est de paralléliser au maximum les calculs indépendants pour augmenter la vitesse de calcul.
 
 Résultat calcul de base matricielles : 
