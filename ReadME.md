@@ -39,9 +39,13 @@ Objectif de la partie : Comparer le temps de calculs de fonctions d'opérations 
 - Définir les dimensiosn des blocks et threads 
 - Faire la fonction voulu : NomFonction<<<BlocksSize, threadsSize*>>>(variable fonction)
 - Envoyer les variables et pointeurs du GPU au CPU avec cudaMemcpy
-- Libérer la mémoire alouée
+- Libérer la mémoire alouée avec cudaFree
 
   *Doit être inférieur à 1024
+
+Les threads permettent de paralléliser des tâches longues tel que lors de calcul matricielles pour les rendre plus rapide. Ici, pour ne pas être limité par la taille du ThreadSize, on utilise BlockSize pour diviser les calculs matricielles en plusieurs petits calculs fait par des threads (cela revient à utiliser plusieurs threads). 
+
+On utilise blockIdx.x pour récupérer l'indice x (ou y ou z). Le but est de paralléliser au maximum les calculs indépendants pour augmenter la vitesse de calcul.
 
 Résultat calcul de base matricielles : 
 
@@ -76,6 +80,8 @@ Matrice après subsampling : 2\*2\*2
 Indices de convolutions : 
 
 Matrice 1 : indice de la matrice du premier élément de convolution + indice du kernel (M1: 2 dimensions et M2: 3 dimensions)
+
+Matrice 2 : indice du kernel
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/46d8f261-fab7-4b38-8843-a3449b6636e6)
 
