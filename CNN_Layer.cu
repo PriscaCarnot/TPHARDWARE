@@ -165,8 +165,40 @@ __global__ void cudaMatrixSubSamp(float *M1, float *MoutGPU, int c, int p, int l
 }
 
 
+__global__ void cudaFlatten(int n, int p, float* input, float* output) {
+    int i = blockIdx.x;
+    int j = blockIdx.y;
+    int z = blockIdx.z;
+    for (int k = 0; k<n; k++){
+     for (int l = 0; l<p; l++) {
+      *(output+i*n*p+j*p+z) = *(input+i*n*p+j*p+z);
+      }
+    }
+}
 
-int main() {
+int cudaDense(){
+ FILE *fptr;
+
+ if((fptr = fopen("FashionMNIST_weights.h5","rb")) == NULL){
+    printf("Can't open file");
+    exit(1);
+  }
+  /*
+  fread(&magic, sizeof(int), 1, fptr);
+  fread(&nbImg, sizeof(int), 1, fptr);
+  fread(&nbRows, sizeof(int), 1, fptr);
+  fread(&nbCols, sizeof(int), 1, fptr);
+  
+  printf("Nb Magic : %u \n", magic);
+  printf("Nb Img : %u \n", nbImg);
+  printf("Nb Rows : %u \n", nbRows);
+  printf("Nb Cols : %u \n", nbCols);
+  */
+  
+  exit(0);
+}
+
+int main1() {
   int n = 8; // taille raw data
   int p = 4; // taille matrice sortie 1ere convolution
   int c = 2; // Nombre de kernel
@@ -190,13 +222,14 @@ int main() {
   
   // Avec le GPU : 
   float *d_raw_data, *d_C1_data, *d_S1_data, *d_C1_kernel;
+  
 
   
   cudaMalloc((void**)&d_raw_data, (n * n) * sizeof(float));
   cudaMalloc((void**)&d_C1_data, (c*p*p) * sizeof(float));
   cudaMalloc((void**)&d_S1_data, (c*l*l) * sizeof(float));
   cudaMalloc((void**)&d_C1_kernel, (c*m*m) * sizeof(float));
-
+ 
     
   cudaMemcpy(d_raw_data, raw_data, (n * n) * sizeof(float), cudaMemcpyHostToDevice);
   cudaMemcpy(d_C1_data, C1_data, (c*p*p) * sizeof(float), cudaMemcpyHostToDevice);
@@ -207,6 +240,7 @@ int main() {
   dim3 gridSize2(c, l, l);
   cudaMatrixConv<<<gridSize, 1>>>(d_raw_data, d_C1_kernel, d_C1_data, c, n, m); 
   cudaMatrixSubSamp<<<gridSize2, 1>>>(d_C1_data, d_S1_data, c, p, l);
+  //cudaDense<<<1,1>>>();
   
   cudaMemcpy(C1_data, d_C1_data, c*p*p * sizeof(float), cudaMemcpyDeviceToHost);
   cudaMemcpy(S1_data, d_S1_data, c*l*l * sizeof(float), cudaMemcpyDeviceToHost);
