@@ -23,7 +23,7 @@ printMNIST_1.cu : Contient la fonction main qui fait la pipeline de tout le rés
 
 Pour lancer un fichier .cu : 
 
-nvcc CalculMatricelle -o main
+nvcc CalculMatricelle.cu -o main
 
 ./main 
 
@@ -37,7 +37,7 @@ Objectif de la partie : Comparer le temps de calculs de fonctions d'opérations 
 - Alouer de la mémoire aux pointeurs avec cudaMalloc
 - Envoyer variables et pointeurs du CPU au GPU avec cudaMemcpy
 - Définir les dimensiosn des blocks et threads 
-- Faire la fonction voulu : NomFonction<<<BlocksSize, threadsSize*>>>(variable fonction)
+- Faire la fonction voulu : NomFonction<<<numBlock, Threadbyblocks*>>>(variable fonction)
 - Envoyer les variables et pointeurs du GPU au CPU avec cudaMemcpy
 - Libérer la mémoire alouée avec cudaFree
 
@@ -108,4 +108,5 @@ Coller les lignes de la matrice de bout en bout pour obtenir un vecteur.
 Multiplier le vecteur précédent par les poids de la couche et ajouter un biais. Les poids se trouve dans le notebook donné.
 
 ## Partie 3 : printMNIST.cu
-
+Partie cuda : Après éxécution du code, deux images de 5 s'affiche (l'image et son label associé). Cela correspond aux données d'entrées. L'image d'entrée doit passer par les différentes couches du réseaux. Le but étant d'obtenir à la fin son label. 
+Partie python : Nous avons récupérer les deux fichiers après exécution du code mais nous n'avons pas réussi à utiliser les éléments contenu dans le fichier .h5.
