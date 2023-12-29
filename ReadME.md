@@ -43,7 +43,9 @@ Objectif de la partie : Comparer le temps de calculs de fonctions d'opérations 
 
   *Doit être inférieur à 1024
 
-Les threads permettent de paralléliser des tâches longues tel que lors de calcul matricielles pour les rendre plus rapide. Ici, pour ne pas être limité par la taille du ThreadSize, on utilise BlockSize pour diviser les calculs matricielles en plusieurs petits calculs fait par des threads (cela revient à utiliser plusieurs threads). 
+Les threads permettent de paralléliser des tâches longues tel que lors de calcul matricielles pour les rendre plus rapide. Ainsi le temps d'éxecution d'une addition matricielle dans le GPU revient au temps d'une addition entre deux nombre alors que dans le CPU, le temps sera *temps d'une addition* \* *dimension d'une matrice*. 
+
+Ici, pour ne pas être limité par la taille du ThreadSize, on utilise BlockSize pour diviser les calculs matricielles en plusieurs petits calculs fait par des threads (cela revient à utiliser plusieurs threads). 
 
 On utilise blockIdx.x pour récupérer l'indice x (ou y ou z). Le but est de paralléliser au maximum les calculs indépendants pour augmenter la vitesse de calcul.
 
@@ -51,11 +53,11 @@ Résultat calcul de base matricielles :
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/f701d992-dc4f-4f12-9d4f-70efc47a8273)
 
-Temps d'éxecution CPU et GPU : 
+Temps d'éxecution CPU et GPU pour des matrices de grandes dimensions: 
 
 ![image](https://github.com/PriscaCarnot/TPHARDWARE/assets/118208053/20b85af1-86aa-4515-a99d-a1feed5d32d8)
 
-Action la plus chronophage : transfert de données entre le CPU et le GPU.
+Action la plus chronophage : transfert de données entre le CPU et le GPU (GPU environ 500 fois plus rapide que le CPU).
 
 Conclusion : Pour des tailles de matrice élevées, le plus long est le temps de transfert des données entre le GPU et le CPU. Pour des tailles de matrices faible, le CPU est plus rapide. Lorsque l'on travaille avec des matrices de grandes tailles, passer par le GPU devient indispensable pour gagner du temps. 
 
